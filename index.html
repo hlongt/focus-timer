@@ -62,7 +62,6 @@ body{
     align-items:center;
 }
 
-/* 清空按钮 */
 .clear-btn{
     padding:4px 10px;
     border-radius:8px;
@@ -137,7 +136,7 @@ button{
     <div class="section-title" id="t-now">当前时间</div>
     <div id="clock" class="time">--:--:--</div>
 
-    <div class="section-title" id="t-focus">当前专注计时</div>
+    <div class="section-title" id="t-focus">专注计时</div>
     <div id="focus" class="counter-big">00:00:00</div>
 
     <div style="text-align:center;margin-bottom:5px;">
@@ -153,7 +152,7 @@ button{
     </div>
 
     <div class="total-box">
-        <span id="t-total">累计总专注时长：</span>
+        <span id="t-total">累计时长：</span>
         <span id="total">00:00:00</span>
     </div>
 
@@ -172,9 +171,9 @@ let lang = localStorage.getItem("lang") || "cn";
 const text = {
     cn:{
         now:"当前时间",
-        focus:"当前专注计时",
+        focus:"专注计时",
         history:"历史记录",
-        total:"累计总专注时长：",
+        total:"累计时长：",
         start:"开始",
         pause:"暂停",
         finish:"结束并保存",
@@ -299,7 +298,6 @@ function renderHistory(){
     ).join("<br>");
 }
 
-// ---------- 清空 ----------
 function clearHistory(){
     if(!confirm(lang==="cn" ? "确定清空所有历史与累计时长吗？" : "Clear all history and total time?"))
         return;
@@ -319,4 +317,5 @@ renderHistory();
 
 </body>
 </html>
+
 

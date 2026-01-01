@@ -259,7 +259,7 @@ function format(s){
 
 let focusSec = Number(localStorage.getItem("focusSec")) || 0;
 let timer = null;
-
+let startTime = Number(localStorage.getItem("startTime")) || 0;
 let totalSec = Number(localStorage.getItem("totalAll")) || 0;
 document.getElementById("total").innerText = format(totalSec);
 
@@ -267,14 +267,20 @@ let sessions = JSON.parse(localStorage.getItem("sessions") || "[]");
 
 // 计时开始
 function start(){
-    if(timer) return;
-    let startTime = Date.now(); // 获取当前时间戳
-    localStorage.setItem("startTime", startTime); // 保存开始时间戳
+    if(timer) return;  // 如果已经在计时，直接返回
+    if (startTime === 0) {
+        startTime = Date.now(); // 保存开始时间戳
+        localStorage.setItem("startTime", startTime);
+    } else {
+        // 如果是暂停之后重新开始，计算从暂停时到现在的时间差
+        startTime = Date.now() - focusSec * 1000;
+        localStorage.setItem("startTime", startTime);
+    }
 
     timer = setInterval(() => {
-        let elapsed = Math.floor((Date.now() - startTime) / 1000); // 计算自开始以来经过的秒数
+        let elapsed = Math.floor((Date.now() - startTime) / 1000);
         focusSec = elapsed;
-        localStorage.setItem("focusSec", focusSec);  // 保存到 localStorage
+        localStorage.setItem("focusSec", focusSec);
         updateFocusDisplay();
     }, 1000);
 }
@@ -283,21 +289,22 @@ function start(){
 function pause(){
     clearInterval(timer);
     timer = null;
+    localStorage.setItem("focusSec", focusSec);  // 保存当前计时秒数
 }
 
 // 结束并保存计时
 function finish(){
     pause();
-    if(focusSec===0) return;
+    if(focusSec === 0) return;
     totalSec += focusSec;
     localStorage.setItem("totalAll", totalSec);
     document.getElementById("total").innerText = format(totalSec);
 
     sessions.push({
-        duration:focusSec,
-        time:new Date().toLocaleString()
+        duration: focusSec,
+        time: new Date().toLocaleString()
     });
-    localStorage.setItem("sessions",JSON.stringify(sessions));
+    localStorage.setItem("sessions", JSON.stringify(sessions));
 
     focusSec = 0;
     localStorage.setItem("focusSec", focusSec);
@@ -307,9 +314,7 @@ function finish(){
 
 // 页面加载时恢复计时器状态
 window.onload = function() {
-    let startTime = localStorage.getItem("startTime");
     let savedFocusSec = Number(localStorage.getItem("focusSec")) || 0;
-
     if (startTime) {
         let elapsed = Math.floor((Date.now() - startTime) / 1000);
         focusSec = savedFocusSec + elapsed;

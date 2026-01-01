@@ -265,24 +265,27 @@ document.getElementById("total").innerText = format(totalSec);
 
 let sessions = JSON.parse(localStorage.getItem("sessions") || "[]");
 
+// 计时开始
 function start(){
     if(timer) return;
-    let startTime = Date.now();
-    localStorage.setItem("startTime", startTime);
+    let startTime = Date.now(); // 获取当前时间戳
+    localStorage.setItem("startTime", startTime); // 保存开始时间戳
 
     timer = setInterval(() => {
-        let elapsed = Math.floor((Date.now() - startTime) / 1000);
+        let elapsed = Math.floor((Date.now() - startTime) / 1000); // 计算自开始以来经过的秒数
         focusSec = elapsed;
-        localStorage.setItem("focusSec", focusSec);
+        localStorage.setItem("focusSec", focusSec);  // 保存到 localStorage
         updateFocusDisplay();
     }, 1000);
 }
 
+// 暂停计时
 function pause(){
     clearInterval(timer);
     timer = null;
 }
 
+// 结束并保存计时
 function finish(){
     pause();
     if(focusSec===0) return;
@@ -302,35 +305,7 @@ function finish(){
     renderHistory();
 }
 
-function updateFocusDisplay() {
-    document.getElementById("focus").innerText = format(focusSec);
-}
-
-function renderHistory(){
-    const box = document.getElementById("history");
-    if(sessions.length === 0){
-        box.innerHTML = text[lang].none;
-        return;
-    }
-    box.innerHTML = sessions.map(s =>
-        `📌 ${s.time} —— ${format(s.duration)}`
-    ).join("<br>");
-}
-
-function clearHistory(){
-    if(!confirm(lang==="cn" ? "确定清空所有历史与累计时长吗？" : "Clear all history and total time?"))
-        return;
-    sessions = [];
-    totalSec = 0;
-    localStorage.removeItem("sessions");
-    localStorage.removeItem("totalAll");
-    localStorage.removeItem("startTime");
-    localStorage.removeItem("focusSec");
-    document.getElementById("total").innerText = "00:00:00";
-    renderHistory();
-}
-
-// ---------- 页面加载时恢复计时状态 ----------
+// 页面加载时恢复计时器状态
 window.onload = function() {
     let startTime = localStorage.getItem("startTime");
     let savedFocusSec = Number(localStorage.getItem("focusSec")) || 0;
@@ -352,6 +327,37 @@ window.onload = function() {
         updateFocusDisplay();
     }
 };
+
+// 更新计时显示
+function updateFocusDisplay() {
+    document.getElementById("focus").innerText = format(focusSec);
+}
+
+// 渲染历史记录
+function renderHistory() {
+    const box = document.getElementById("history");
+    if(sessions.length === 0){
+        box.innerHTML = text[lang].none;
+        return;
+    }
+    box.innerHTML = sessions.map(s =>
+        `📌 ${s.time} —— ${format(s.duration)}`
+    ).join("<br>");
+}
+
+// 清空历史记录
+function clearHistory(){
+    if(!confirm(lang==="cn" ? "确定清空所有历史与累计时长吗？" : "Clear all history and total time?"))
+        return;
+    sessions = [];
+    totalSec = 0;
+    localStorage.removeItem("sessions");
+    localStorage.removeItem("totalAll");
+    localStorage.removeItem("startTime");
+    localStorage.removeItem("focusSec");
+    document.getElementById("total").innerText = "00:00:00";
+    renderHistory();
+}
 
 // ---------- 初始化 ----------
 applyLang();

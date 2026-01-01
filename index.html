@@ -125,8 +125,6 @@ button{
     text-decoration: none;
     color: inherit;
 }
-
-
 </style>
 </head>
 <body>
@@ -258,22 +256,18 @@ function format(s){
 }
 
 let focusSec = Number(localStorage.getItem("focusSec")) || 0;
-let timer = null;
-let startTime = Number(localStorage.getItem("startTime")) || 0;
 let totalSec = Number(localStorage.getItem("totalAll")) || 0;
-document.getElementById("total").innerText = format(totalSec);
+let startTime = Number(localStorage.getItem("startTime")) || 0;
+let timer = null;
 
+document.getElementById("total").innerText = format(totalSec);
 let sessions = JSON.parse(localStorage.getItem("sessions") || "[]");
 
 // 计时开始
 function start(){
-    if(timer) return;  // 如果已经在计时，直接返回
+    if (timer) return;  // 如果已经在计时，直接返回
     if (startTime === 0) {
-        startTime = Date.now(); // 保存开始时间戳
-        localStorage.setItem("startTime", startTime);
-    } else {
-        // 如果是暂停之后重新开始，计算从暂停时到现在的时间差
-        startTime = Date.now() - focusSec * 1000;
+        startTime = Date.now();  // 保存开始时间戳
         localStorage.setItem("startTime", startTime);
     }
 

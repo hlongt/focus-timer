@@ -44,12 +44,44 @@ body{
     font-family:"Microsoft YaHei", "PingFang SC", sans-serif;
     background:var(--bg);
     color:var(--text);
-    min-height:100vh;
+    height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:stretch;
+    padding:0;
+    transition: background 0.4s ease;
+    overflow-y:auto;
+}
+
+/* ── Global nav ── */
+.global-nav{
+    position:sticky;
+    top:0;
+    z-index:100;
+    width:100%;
+    display:flex;
+    justify-content:flex-end;
+    align-items:center;
+    padding:10px 20px;
+    background:transparent;
+    transition:background 0.4s;
+}
+.nav-controls{
+    display:flex;
+    gap:6px;
+    align-items:center;
+}
+
+/* ── Content wrapper (centres everything) ── */
+.content-wrap{
     display:flex;
     flex-direction:column;
     align-items:center;
-    padding:30px 16px 60px;
-    transition: background 0.4s ease;
+    justify-content:center;
+    width:100%;
+    flex:1;
+    padding:24px 0 60px;
+    min-height:0;
 }
 
 /* ── Tabs ── */
@@ -62,9 +94,8 @@ body{
     padding:4px;
     margin-bottom:20px;
     width:500px;
-    max-width:100%;
-}
-.tab-btn{
+    max-width:calc(100vw - 32px);
+}.tab-btn{
     flex:1;
     padding:8px 0;
     border:none;
@@ -75,6 +106,7 @@ body{
     cursor:pointer;
     transition:all 0.25s;
     opacity:0.55;
+    font-family:inherit;
 }
 .tab-btn.active{
     background:var(--accent);
@@ -91,18 +123,11 @@ body{
     border:1px solid var(--border);
     box-shadow:0 4px 40px rgba(0,0,0,.25);
     width:500px;
-    max-width:100%;
+    max-width:calc(100vw - 32px);
     transition: background 0.4s ease;
     display:none;
 }
 .box.active{ display:block; }
-
-.top-bar{
-    display:flex;
-    justify-content:space-between;
-    margin-bottom:14px;
-    gap:6px;
-}
 
 button{
     padding:10px 18px;
@@ -119,7 +144,7 @@ button:hover{ filter:brightness(1.1); transform:translateY(-1px); }
 button:active{ transform:translateY(1px); filter:brightness(0.9); }
 
 .toggle-btn{
-    padding:6px 12px;
+    padding:6px 14px;
     border-radius:10px;
     background:#374151;
     color:#fff;
@@ -430,6 +455,19 @@ button:active{ transform:translateY(1px); filter:brightness(0.9); }
 </head>
 <body>
 
+<!-- Global nav -->
+<nav class="global-nav">
+    <div class="nav-controls">
+        <button class="toggle-btn" onclick="toggleTheme()" id="themeBtn">🌓 自动</button>
+        <button class="toggle-btn" onclick="toggleLang()" id="langBtn">🌐 中文</button>
+    </div>
+</nav>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<div class="content-wrap">
+
 <!-- Tabs -->
 <div class="tab-bar" id="tabBar">
     <button class="tab-btn active" onclick="switchTab('free')" id="tab-free">⏱ 自由计时</button>
@@ -437,15 +475,8 @@ button:active{ transform:translateY(1px); filter:brightness(0.9); }
     <button class="tab-btn" onclick="switchTab('stats')" id="tab-stats">📊 统计</button>
 </div>
 
-<!-- Toast -->
-<div class="toast" id="toast"></div>
-
 <!-- ══════════════ 自由计时 ══════════════ -->
 <div class="box active" id="box-free">
-    <div class="top-bar">
-        <button class="toggle-btn" onclick="toggleTheme()" id="themeBtn">🌓 自动</button>
-        <button class="toggle-btn" onclick="toggleLang()" id="langBtn">🌐 中文</button>
-    </div>
 
     <div class="section-title" id="t-now">当前时间</div>
     <div id="clock" class="time">--:--:--</div>
@@ -471,10 +502,6 @@ button:active{ transform:translateY(1px); filter:brightness(0.9); }
 
 <!-- ══════════════ 番茄钟 ══════════════ -->
 <div class="box" id="box-pomo">
-    <div class="top-bar" style="justify-content:flex-end;">
-        <button class="toggle-btn" onclick="toggleTheme()">🌓</button>
-        <button class="toggle-btn" onclick="toggleLang()">🌐</button>
-    </div>
 
     <div class="pomo-mode-bar">
         <button class="pomo-mode-btn active-focus" id="pm-focus" onclick="setPomoMode('focus')">🍅 专注</button>
@@ -545,10 +572,6 @@ button:active{ transform:translateY(1px); filter:brightness(0.9); }
 
 <!-- ══════════════ 统计 ══════════════ -->
 <div class="box" id="box-stats">
-    <div class="top-bar" style="justify-content:flex-end;">
-        <button class="toggle-btn" onclick="toggleTheme()">🌓</button>
-        <button class="toggle-btn" onclick="toggleLang()">🌐</button>
-    </div>
 
     <!-- 摘要卡片 -->
     <div class="stats-grid" id="statsGrid">
@@ -586,6 +609,8 @@ button:active{ transform:translateY(1px); filter:brightness(0.9); }
         </div>
     </div>
 </div>
+
+</div><!-- /content-wrap -->
 
 <div class="author-info">
     <p><a href="https://hlongt.github.io">📫Contact me via email to loongtao.huang@gmail.com</a></p>
@@ -651,6 +676,7 @@ function applyLang(){
     document.getElementById("b-finish").innerText = t("finish");
     document.getElementById("clearBtn").innerText = t("clear");
     document.getElementById("langBtn").innerText = t("langLabel");
+    document.getElementById("themeBtn").innerText = theme==="auto"?t("themeAuto"):theme==="light"?t("themeLight"):t("themeDark");
     document.getElementById("tab-free").innerText = t("tabFree");
     document.getElementById("tab-pomo").innerText = t("tabPomo");
     document.getElementById("tab-stats").innerText = t("tabStats");
@@ -697,7 +723,6 @@ function applyTheme(){
     let actual = theme === "auto" ? (hour>=6&&hour<18?"light":"dark") : theme;
     document.body.classList.toggle("light", actual==="light");
     const lbl = theme==="auto"?t("themeAuto"):theme==="light"?t("themeLight"):t("themeDark");
-    document.querySelectorAll("[id='themeBtn']").forEach(b=>b.innerText=lbl);
     document.getElementById("themeBtn").innerText = lbl;
     // update chart colors
     if(currentChartDays) renderBarChart(currentChartDays);
